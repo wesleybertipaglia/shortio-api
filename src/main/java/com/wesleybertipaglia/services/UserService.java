@@ -62,9 +62,8 @@ public class UserService {
     }
 
     @Transactional
-    public User create(UserDtos.Create dto) {
-        validateEmailUniqueness(dto.email());
-        var user = userMapper.toEntity(dto);
+    public User create(User user) {
+        validateEmailUniqueness(user.email);
         userRepository.persist(user);
         return user;
     }

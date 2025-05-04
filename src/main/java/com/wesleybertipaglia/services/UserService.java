@@ -47,26 +47,30 @@ public class UserService {
         return new PageDtos.Result<>(items, pagination);
     }
 
-    public Optional<User> getByIdOptional(ObjectId id) {
+    public Optional<User> getEntityByIdOptional(ObjectId id) {
         return userRepository.findByIdOptional(id);
     }
 
-    public User getById(ObjectId id) {
-        return getByIdOptional(id)
+    public User getEntityById(ObjectId id) {
+        return getEntityByIdOptional(id)
                 .orElseThrow(() -> new NotFoundException(USER_NOT_FOUND));
     }
 
-    public Optional<User> getByEmailOptional(String email) {
+    public Optional<User> getEntityByEmailOptional(String email) {
         return userRepository.findByEmailOptional(email);
     }
 
-    public User getByEmail(String email) {
-        return getByEmailOptional(email)
+    public User getEntityByEmail(String email) {
+        return getEntityByEmailOptional(email)
                 .orElseThrow(() -> new NotFoundException(USER_NOT_FOUND));
     }
 
-    public UserDtos.Details getDetailsById(ObjectId id) {
-        return userMapper.toDetailsDto(getById(id));
+    public UserDtos.Details getById(ObjectId id) {
+        return userMapper.toDetailsDto(getEntityById(id));
+    }
+
+    public UserDtos.Details getByEmail(String email) {
+        return userMapper.toDetailsDto(getEntityByEmail(email));
     }
 
     @Transactional
@@ -78,7 +82,7 @@ public class UserService {
 
     @Transactional
     public User update(ObjectId id, @Valid UserDtos.Update dto) {
-        final User user = getById(id);
+        final User user = getEntityById(id);
 
         if (dto.email() != null && !dto.email().equals(user.email)) {
             validateEmailUniqueness(dto.email());
@@ -96,7 +100,7 @@ public class UserService {
 
     @Transactional
     public void delete(ObjectId id) {
-        final User user = getById(id);
+        final User user = getEntityById(id);
         userRepository.delete(user);
     }
 
@@ -144,7 +148,7 @@ public class UserService {
     }
 
     private void validateEmailUniqueness(String email) {
-        if (getByEmailOptional(email).isPresent()) {
+        if (getEntityByEmailOptional(email).isPresent()) {
             throw new IllegalArgumentException(EMAIL_ALREADY_IN_USE);
         }
     }

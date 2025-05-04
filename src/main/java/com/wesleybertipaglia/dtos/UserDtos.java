@@ -32,7 +32,7 @@ public class UserDtos {
                         @NotEmpty(message = "Email" + REQUIRED) @Email(message = VALID_EMAIL) String email,
                         @NotEmpty(message = "Password"
                                         + REQUIRED) @Size(min = 8, message = MIN_PASSWORD_LENGTH) String password,
-                        @NotNull(message = "Role" + REQUIRED) Role role) {
+                        Role role) {
         }
 
         public record Update(

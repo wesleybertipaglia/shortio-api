@@ -3,7 +3,6 @@ package com.wesleybertipaglia.services;
 import com.wesleybertipaglia.dtos.PageDtos;
 import com.wesleybertipaglia.dtos.ResourceDtos;
 import com.wesleybertipaglia.entities.Resource;
-import com.wesleybertipaglia.enums.Role;
 import com.wesleybertipaglia.mappers.ResourceMapper;
 import com.wesleybertipaglia.repositories.ResourceRepository;
 import com.wesleybertipaglia.helpers.SlugHelper;
@@ -53,6 +52,7 @@ public class ResourceService {
                 .orElseThrow(() -> new NotFoundException(RESOURCE_NOT_FOUND));
 
         checkPermission(resource);
+        authService.checkPermission("read", "resource");
         return resourceMapper.toDetailsDto(resource);
     }
 
@@ -65,7 +65,7 @@ public class ResourceService {
 
     @Transactional
     public ResourceDtos.Details create(@Valid ResourceDtos.Create dto) {
-        authService.checkPermission(Role.ADMIN, Role.OWNER);
+        authService.checkPermission("create", "resource");
         final var org = orgService.getByCurrentUser();
         final var slug = SlugHelper.generateRandomSlug(8);
         final var resource = resourceMapper.toEntity(org.id, slug, dto);
@@ -80,6 +80,7 @@ public class ResourceService {
                 .orElseThrow(() -> new NotFoundException(RESOURCE_NOT_FOUND));
 
         checkPermission(resource);
+        authService.checkPermission("update", "resource");
 
         if (dto.url() != null) {
             resource.url = dto.url();
@@ -95,11 +96,11 @@ public class ResourceService {
                 .orElseThrow(() -> new NotFoundException(RESOURCE_NOT_FOUND));
 
         checkPermission(resource);
+        authService.checkPermission("delete", "resource");
         resourceRepository.delete(resource);
     }
 
     private void checkPermission(Resource resource) {
-        authService.checkPermission(Role.ADMIN, Role.OWNER);
         final var org = orgService.getByCurrentUser();
 
         if (!resource.orgId.equals(org.id)) {

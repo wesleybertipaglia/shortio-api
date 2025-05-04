@@ -7,7 +7,6 @@ import org.bson.types.ObjectId;
 import com.wesleybertipaglia.dtos.*;
 import com.wesleybertipaglia.entities.Org;
 import com.wesleybertipaglia.entities.User;
-import com.wesleybertipaglia.enums.Role;
 import com.wesleybertipaglia.mappers.UserMapper;
 import com.wesleybertipaglia.repositories.UserRepository;
 
@@ -29,14 +28,16 @@ public class UserService {
     private final UserMapper userMapper;
     private final AuthService authService;
     private final OrgService orgService;
+    private final PermitService permitService;
 
     @Inject
     public UserService(UserRepository userRepository, UserMapper userMapper, AuthService authService,
-            OrgService orgService) {
+            OrgService orgService, PermitService permitService) {
         this.userRepository = userRepository;
         this.userMapper = userMapper;
         this.authService = authService;
         this.orgService = orgService;
+        this.permitService = permitService;
     }
 
     public PageDtos.Result<UserDtos.Summary> list(Integer page, Integer size) {
@@ -75,27 +76,42 @@ public class UserService {
 
     @Transactional
     public User create(User user) {
-        validateEmailUniqueness(user.email);
-        userRepository.persist(user);
-        return user;
+        try {
+            validateEmailUniqueness(user.email);
+            userRepository.persist(user);
+            permitService.createUser(userMapper.toDetailsDto(user));
+
+            return user;
+        } catch (Exception e) {
+            throw new InternalServerErrorException(e.getMessage());
+        }
     }
 
     @Transactional
     public User update(ObjectId id, @Valid UserDtos.Update dto) {
-        final User user = getEntityById(id);
+        try {
+            final User user = getEntityById(id);
 
-        if (dto.email() != null && !dto.email().equals(user.email)) {
-            validateEmailUniqueness(dto.email());
-            user.email = dto.email();
-        }
-        if (dto.name() != null) {
-            user.name = dto.name();
-        }
-        if (dto.password() != null) {
-            user.password = dto.password();
-        }
+            if (dto.email() != null && !dto.email().equals(user.email)) {
+                validateEmailUniqueness(dto.email());
+                user.email = dto.email();
+            }
+            if (dto.name() != null) {
+                user.name = dto.name();
+            }
+            if (dto.password() != null) {
+                user.password = dto.password();
+            }
+            if (dto.role() != null) {
+                user.role = dto.role();
+                permitService.assignRole(userMapper.toDetailsDto(user));
+            }
 
-        return user;
+            return user;
+        } catch (Exception e) {
+            System.err.println("Error sync user in Permit.io: " + e.getMessage());
+            throw new InternalServerErrorException("");
+        }
     }
 
     @Transactional
@@ -106,7 +122,7 @@ public class UserService {
 
     @Transactional
     public UserDtos.Details createOrgUser(@Valid UserDtos.Create dto) {
-        authService.checkPermission(Role.ADMIN, Role.OWNER);
+        authService.checkPermission("create", "user");
         validateEmailUniqueness(dto.email());
 
         final var org = orgService.getByCurrentUser();
@@ -120,7 +136,7 @@ public class UserService {
 
     @Transactional
     public UserDtos.Details updateUserOrg(ObjectId id, UserDtos.Update dto) {
-        authService.checkPermission(Role.ADMIN, Role.OWNER);
+        authService.checkPermission("update", "user");
         final var org = orgService.getByCurrentUser();
 
         validateUserInOrg(org, id);
@@ -133,7 +149,7 @@ public class UserService {
 
     @Transactional
     public void deleteOrgUser(ObjectId id) {
-        authService.checkPermission(Role.ADMIN, Role.OWNER);
+        authService.checkPermission("delete", "user");
         final var org = orgService.getByCurrentUser();
 
         validateUserInOrg(org, id);

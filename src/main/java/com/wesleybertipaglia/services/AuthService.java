@@ -6,13 +6,10 @@ import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import jakarta.ws.rs.ForbiddenException;
 
-import java.util.Arrays;
-
 import org.bson.types.ObjectId;
 
 import com.wesleybertipaglia.dtos.*;
 import com.wesleybertipaglia.entities.User;
-import com.wesleybertipaglia.enums.Role;
 import com.wesleybertipaglia.mappers.AuthMapper;
 import com.wesleybertipaglia.providers.PasswordProvider;
 import io.quarkus.security.UnauthorizedException;
@@ -29,6 +26,7 @@ public class AuthService {
     private final AuthMapper authMapper;
     private final PasswordProvider passwordProvider;
     private final SecurityIdentity securityIdentity;
+    private final PermitService permitService;
 
     @Inject
     public AuthService(
@@ -36,12 +34,14 @@ public class AuthService {
             OrgService orgService,
             AuthMapper authMapper,
             PasswordProvider passwordProvider,
-            SecurityIdentity securityIdentity) {
+            SecurityIdentity securityIdentity,
+            PermitService permitService) {
         this.userService = userService;
         this.orgService = orgService;
         this.authMapper = authMapper;
         this.passwordProvider = passwordProvider;
         this.securityIdentity = securityIdentity;
+        this.permitService = permitService;
     }
 
     @Transactional
@@ -69,13 +69,15 @@ public class AuthService {
                 .orElseThrow(() -> new UnauthorizedException(INVALID_CREDENTIALS));
     }
 
-    public void checkPermission(Role... allowedRoles) {
+    public void checkPermission(String action, String resource) {
         final var user = getCurrentUser();
-        boolean hasPermission = Arrays.stream(allowedRoles)
-                .anyMatch(role -> role.equals(user.role));
-
-        if (!hasPermission) {
-            throw new ForbiddenException(FORBIDDEN_ACTION);
+        try {
+            boolean isPermitted = permitService.checkPermission(user.id.toString(), action, resource);
+            if (!isPermitted) {
+                throw new ForbiddenException(FORBIDDEN_ACTION);
+            }
+        } catch (Exception e) {
+            throw new ForbiddenException("Erro ao verificar permissões: " + e.getMessage());
         }
     }
 

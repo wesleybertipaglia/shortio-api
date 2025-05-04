@@ -4,7 +4,6 @@ import org.bson.types.ObjectId;
 
 import com.wesleybertipaglia.dtos.OrgDtos;
 import com.wesleybertipaglia.entities.Org;
-import com.wesleybertipaglia.enums.Role;
 import com.wesleybertipaglia.mappers.OrgMapper;
 import com.wesleybertipaglia.repositories.OrgRepository;
 import com.wesleybertipaglia.helpers.SlugHelper;
@@ -67,7 +66,7 @@ public class OrgService {
     @Transactional
     public OrgDtos.Details update(@Valid OrgDtos.Update dto) {
         final var org = getByCurrentUser();
-        authService.checkPermission(Role.OWNER);
+        authService.checkPermission("update", "org");
 
         if (dto.name() != null) {
             org.name = dto.name();

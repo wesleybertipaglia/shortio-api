@@ -27,8 +27,6 @@ public class UserMapper {
 
     public User toEntity(UserDtos.Create dto) {
         var role = dto.role() != null ? dto.role() : Role.EMPLOYEE;
-        var password = passwordProvider.hash(dto.password());
-
-        return new User(dto.name(), dto.email(), password, role);
+        return new User(dto.name(), dto.email(), passwordProvider.hash(dto.password()), role);
     }
 }

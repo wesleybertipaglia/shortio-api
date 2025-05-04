@@ -1,0 +1,24 @@
+meta {
+  name: create
+  type: http
+  seq: 5
+}
+
+post {
+  url: {{url_api}}/users
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  {
+    "email": "carlos@email.com",
+    "name": "carlos",
+    "password": "12345678",
+    "role": "ADMIN"
+  }
+}

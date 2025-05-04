@@ -26,7 +26,7 @@ public class UserController {
     @GET
     @Path("/{id}")
     public Response getById(@PathParam("id") String id) {
-        var user = userService.getById(new ObjectId(id));
+        var user = userService.getDetailsById(new ObjectId(id));
         return Response.ok(user).build();
     }
 }

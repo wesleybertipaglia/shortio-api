@@ -53,7 +53,7 @@ public class AuthService {
 
     @Transactional
     public AuthDtos.Response signIn(AuthDtos.SignIn dto) {
-        final var user = userService.getByEmailOptional(dto.email())
+        final var user = userService.getEntityByEmailOptional(dto.email())
                 .orElseThrow(() -> new UnauthorizedException(INVALID_CREDENTIALS));
 
         if (!passwordProvider.matches(dto.password(), user.password)) {
@@ -65,7 +65,7 @@ public class AuthService {
 
     public User getCurrentUser() {
         final var id = securityIdentity.getPrincipal().getName();
-        return userService.getByIdOptional(new ObjectId(id))
+        return userService.getEntityByIdOptional(new ObjectId(id))
                 .orElseThrow(() -> new UnauthorizedException(INVALID_CREDENTIALS));
     }
 

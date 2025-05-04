@@ -1,0 +1,22 @@
+meta {
+  name: Delete
+  type: http
+  seq: 5
+}
+
+delete {
+  url: {{url_api}}/resources/68177737fb4d7f17eabe296f
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  {
+    "username": "wesleybertipaglia",
+    "password": "12356"
+  }
+}

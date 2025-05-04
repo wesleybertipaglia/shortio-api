@@ -1,0 +1,21 @@
+meta {
+  name: create
+  type: http
+  seq: 6
+}
+
+post {
+  url: {{url_api}}/resources
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  {
+    "url": "www.oracle.com" 
+  }
+}

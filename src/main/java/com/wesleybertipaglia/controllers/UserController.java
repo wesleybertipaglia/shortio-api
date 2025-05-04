@@ -2,6 +2,7 @@ package com.wesleybertipaglia.controllers;
 
 import org.bson.types.ObjectId;
 
+import com.wesleybertipaglia.dtos.UserDtos;
 import com.wesleybertipaglia.services.UserService;
 
 import jakarta.inject.Inject;
@@ -28,5 +29,25 @@ public class UserController {
     public Response getById(@PathParam("id") String id) {
         var user = userService.getDetailsById(new ObjectId(id));
         return Response.ok(user).build();
+    }
+
+    @POST
+    public Response create(UserDtos.Create dto) {
+        var user = userService.createOrgUser(dto);
+        return Response.status(Response.Status.CREATED).entity(user).build();
+    }
+
+    @PUT
+    @Path("/{id}")
+    public Response update(@PathParam("id") String id, UserDtos.Update dto) {
+        var user = userService.updateUserOrg(new ObjectId(id), dto);
+        return Response.status(Response.Status.OK).entity(user).build();
+    }
+
+    @DELETE
+    @Path("/{id}")
+    public Response delete(@PathParam("id") String id) {
+        userService.deleteOrgUser(new ObjectId(id));
+        return Response.noContent().build();
     }
 }

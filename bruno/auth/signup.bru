@@ -1,0 +1,23 @@
+meta {
+  name: signup
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{url}}/auth/signup
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "email": "wesley@email.com",
+    "name": "wesley",
+    "password": "12345678"
+  }
+}
+
+vars:post-response {
+  token: res.body.token.content
+}

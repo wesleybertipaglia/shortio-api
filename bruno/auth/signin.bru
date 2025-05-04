@@ -1,0 +1,22 @@
+meta {
+  name: signin
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{url}}/auth/signin
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "email": "wesley@email.com",
+    "password": "12345678"
+  }
+}
+
+vars:post-response {
+  token: res.body.token.content
+}

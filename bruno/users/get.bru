@@ -1,0 +1,15 @@
+meta {
+  name: get
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{url}}/users/6816d4e64f9048951560c878
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}

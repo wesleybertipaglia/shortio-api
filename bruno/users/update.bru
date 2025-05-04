@@ -1,0 +1,21 @@
+meta {
+  name: update
+  type: http
+  seq: 2
+}
+
+put {
+  url: {{url}}/users/6816d4e64f9048951560c878
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  {
+    "name": "maria julia" 
+  }
+}

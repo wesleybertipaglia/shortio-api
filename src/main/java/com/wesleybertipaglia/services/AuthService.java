@@ -25,16 +25,20 @@ public class AuthService {
     private static final String FORBIDDEN_ACTION = "You don't have permission to perform this action";
 
     private final UserService userService;
+    private final OrgService orgService;
     private final AuthMapper authMapper;
     private final PasswordProvider passwordProvider;
     private final SecurityIdentity securityIdentity;
 
     @Inject
-    public AuthService(UserService userService,
+    public AuthService(
+            UserService userService,
+            OrgService orgService,
             AuthMapper authMapper,
             PasswordProvider passwordProvider,
             SecurityIdentity securityIdentity) {
         this.userService = userService;
+        this.orgService = orgService;
         this.authMapper = authMapper;
         this.passwordProvider = passwordProvider;
         this.securityIdentity = securityIdentity;
@@ -43,6 +47,7 @@ public class AuthService {
     @Transactional
     public AuthDtos.Response signUp(@Valid AuthDtos.SignUp dto) {
         final var user = userService.create(authMapper.toEntity(dto));
+        createUserOrg(user);
         return authMapper.toResponseDto(user);
     }
 
@@ -66,11 +71,16 @@ public class AuthService {
 
     public void checkPermission(Role... allowedRoles) {
         final var user = getCurrentUser();
-        final boolean hasPermission = Arrays.stream(allowedRoles)
+        boolean hasPermission = Arrays.stream(allowedRoles)
                 .anyMatch(role -> role.equals(user.role));
 
         if (!hasPermission) {
             throw new ForbiddenException(FORBIDDEN_ACTION);
         }
+    }
+
+    private void createUserOrg(User user) {
+        final var orgName = user.name.split(" ")[0].toLowerCase() + "'s org";
+        orgService.create(user.id, orgName);
     }
 }

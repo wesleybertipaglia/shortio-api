@@ -1,72 +1,105 @@
-# shortio
+# 🐕 shortio — Hackathon Submission for Permit.io
 
-This project uses Quarkus, the Supersonic Subatomic Java Framework.
+Welcome to **shortio**, my submission for the [Permit.io Hackathon](https://dev.to/challenges/permit_io). This project is built on a key principle:
 
-If you want to learn more about Quarkus, please visit its website: <https://quarkus.io/>.
+> **Access control shouldn't be an afterthought — it should be built in.**
 
-## Running the application in dev mode
+In an era where link sharing and resource access happen instantly, reliable, organization-aware permission management is essential to ensure that **only the right people access the right resources at the right time**.
 
-You can run your application in dev mode that enables live coding using:
+## 📑 Table of Contents
 
-```shell script
-./mvnw quarkus:dev
+* [Features](#features)
+* [How It Works](#how-it-works)
+* [Getting Started](#getting-started)
+* [Documentation](#documentation)
+* [Contributing](#contributing)
+* [License](#license)
+
+## 🌟 Features
+
+* **Role-Based Access Control (RBAC)** with support for multiple user roles
+* **Organization-aware resource permissions**, enabling scoped access
+* **JWT-based authentication** for secure session handling
+* **Seamless redirect flow** between backend and frontend
+* **React frontend** for sign-in, sign-up, and user onboarding
+* **Quarkus backend** with MongoDB and Panache for data persistence
+* **Developer-friendly setup** with hot reload and simple local development
+
+## 🔄 How It Works
+
+### User Roles
+
+* **Owner**: Full administrative access to the organization, users, and resources
+* **Admin**: Can manage users and resources but cannot modify organization-level settings
+* **Employee**: Restricted to viewing only the resources they have been granted access to
+
+### Access Flow
+
+1. A new user signs up and is assigned the `Owner` role for a newly created organization.
+2. The owner creates resources and invites other users to join the organization.
+3. A user accesses a resource using a short link (e.g., `http://localhost:8080/s/{resourceId}`).
+4. If the user is not authenticated, they are redirected to the frontend for login or registration.
+5. Upon authentication, the backend verifies:
+
+   * Whether the user belongs to the same organization
+   * Whether the user has permission to access the requested resource
+6. If validation passes, the backend responds with the resource’s destination URL.
+7. The frontend handles the final redirect to the resource.
+
+## 🛠️ Getting Started
+
+### Prerequisites
+
+Before starting, ensure you have the following installed:
+
+* Java 21+
+* Node.js v18+
+* Docker (optional, for MongoDB)
+* `make` (used for backend automation)
+
+### Setup
+
+Clone both repositories:
+
+```bash
+git clone https://github.com/wesleybertipaglia/shortio-api.git
+git clone https://github.com/wesleybertipaglia/shortio-app.git
 ```
 
-> **_NOTE:_**  Quarkus now ships with a Dev UI, which is available in dev mode only at <http://localhost:8080/q/dev/>.
+#### Start the Backend
 
-## Packaging and running the application
-
-The application can be packaged using:
-
-```shell script
-./mvnw package
+```bash
+cd shortio-api
+make dev
 ```
 
-It produces the `quarkus-run.jar` file in the `target/quarkus-app/` directory.
-Be aware that it’s not an _über-jar_ as the dependencies are copied into the `target/quarkus-app/lib/` directory.
+Backend runs at: `http://localhost:8080`
 
-The application is now runnable using `java -jar target/quarkus-app/quarkus-run.jar`.
+#### Start the Frontend
 
-If you want to build an _über-jar_, execute the following command:
-
-```shell script
-./mvnw package -Dquarkus.package.jar.type=uber-jar
+```bash
+cd shortio-app
+npm install
+npm run dev
 ```
 
-The application, packaged as an _über-jar_, is now runnable using `java -jar target/*-runner.jar`.
+Frontend runs at: `http://localhost:5173`
 
-## Creating a native executable
+## 📚 Documentation
 
-You can create a native executable using:
+API and module documentation can be found in the `docs` directory within the backend repository:
 
-```shell script
-./mvnw package -Dnative
-```
+* **Authentication** → [/docs/auth](/docs/auth)
+* **User Profiles** → [/docs/profile](/docs/profile)
+* **Organizations** → [/docs/org](/docs/org)
+* **Users** → [/docs/users](/docs/users)
+* **Resources** → [/docs/resources](/docs/resources)
+* **URL Shortener** → [/docs/shortner](/docs/shortner)
 
-Or, if you don't have GraalVM installed, you can run the native executable build in a container using:
+## 🤝 Contributing
 
-```shell script
-./mvnw package -Dnative -Dquarkus.native.container-build=true
-```
+Contributions are welcome and appreciated. If you have suggestions, improvements, or encounter bugs, feel free to open an issue or submit a pull request.
 
-You can then execute your native executable with: `./target/shortio-1.0.0-SNAPSHOT-runner`
+## 📄 License
 
-If you want to learn more about building native executables, please consult <https://quarkus.io/guides/maven-tooling>.
-
-## Related Guides
-
-- REST ([guide](https://quarkus.io/guides/rest)): A Jakarta REST implementation utilizing build time processing and Vert.x. This extension is not compatible with the quarkus-resteasy extension, or any of the extensions that depend on it.
-- MongoDB with Panache ([guide](https://quarkus.io/guides/mongodb-panache)): Simplify your persistence code for MongoDB via the active record or the repository pattern
-- Hibernate Validator ([guide](https://quarkus.io/guides/validation)): Validate object properties (field, getter) and method parameters for your beans (REST, CDI, Jakarta Persistence)
-- Qute ([guide](https://quarkus.io/guides/qute)): Offer templating support for web, email, etc in a build time, type-safe way
-- REST Jackson ([guide](https://quarkus.io/guides/rest#json-serialisation)): Jackson serialization support for Quarkus REST. This extension is not compatible with the quarkus-resteasy extension, or any of the extensions that depend on it
-- SmallRye JWT ([guide](https://quarkus.io/guides/security-jwt)): Secure your applications with JSON Web Token
-- SmallRye JWT Build ([guide](https://quarkus.io/guides/security-jwt-build)): Create JSON Web Token with SmallRye JWT Build API
-
-## Provided Code
-
-### REST
-
-Easily start your REST Web Services
-
-[Related guide section...](https://quarkus.io/guides/getting-started-reactive#reactive-jax-rs-resources)
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.

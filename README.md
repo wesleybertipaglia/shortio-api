@@ -124,12 +124,12 @@ Frontend URL: `http://localhost:5173`
 
 Detailed module and API documentation is available in the backend repo under the `docs` directory:
 
-* [Authentication](shortio-api/docs/auth)
-* [User Profiles](shortio-api/docs/profile)
-* [Organizations](shortio-api/docs/org)
-* [Users](shortio-api/docs/users)
-* [Resources](shortio-api/docs/resources)
-* [URL Shortener](shortio-api/docs/shortner)
+* [Authentication](./docs/auth)
+* [User Profiles](./docs/profile)
+* [Organizations](./docs/org)
+* [Users](./docs/users)
+* [Resources](./docs/resources)
+* [URL Shortener](./docs/shortner)
 
 ## 🤝 Contributing
 

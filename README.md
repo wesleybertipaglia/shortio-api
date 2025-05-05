@@ -124,12 +124,12 @@ Frontend URL: `http://localhost:5173`
 
 Detailed module and API documentation is available in the backend repo under the `docs` directory:
 
-* [Authentication](./docs/auth)
-* [User Profiles](./docs/profile)
-* [Organizations](./docs/org)
-* [Users](./docs/users)
-* [Resources](./docs/resources)
-* [URL Shortener](./docs/shortner)
+* [Authentication](./docs/auth.md)
+* [User Profiles](./docs/profile.md)
+* [Organizations](./docs/org.md)
+* [Users](./docs/users.md)
+* [Resources](./docs/resources.md)
+* [URL Shortener](./docs/shortner.md)
 
 ## 🤝 Contributing
 

@@ -60,6 +60,7 @@ public class ResourceService {
         final var resource = resourceRepository.findBySlugOptional(slug)
                 .orElseThrow(() -> new NotFoundException(RESOURCE_NOT_FOUND));
 
+        authService.checkPermission("read", "resource");
         return resourceMapper.toDetailsDto(resource);
     }
 

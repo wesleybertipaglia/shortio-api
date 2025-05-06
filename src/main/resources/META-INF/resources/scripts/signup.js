@@ -1,6 +1,6 @@
 import Redirect from "./redirect.js";
 
-class SignIn {
+class SignUp {
     constructor() {
         this.redirect = new Redirect();
         document.addEventListener("DOMContentLoaded", () => this.init());
@@ -12,36 +12,37 @@ class SignIn {
         if (token) {
             this.redirect.resolveShortUrl(token);
         } else {
-            const form = document.getElementById("signin-form");
+            const form = document.getElementById("signup-form");
             if (form) {
-                form.addEventListener("submit", (e) => this.handleSignInSubmit(e));
+                form.addEventListener("submit", (e) => this.handleSignUpSubmit(e));
             }
         }
     }
 
     getCredentials() {
         return {
+            name: document.getElementById("name")?.value || "",
             email: document.getElementById("email")?.value || "",
             password: document.getElementById("password")?.value || ""
         };
     }
 
-    async handleSignInSubmit(event) {
+    async handleSignUpSubmit(event) {
         event.preventDefault();
         const credentials = this.getCredentials();
-        await this.submitSignIn(credentials);
+        await this.submitSignUp(credentials);
     }
 
-    async submitSignIn(credentials) {
+    async submitSignUp(credentials) {
         try {
-            const response = await fetch("/api/auth/signin", {
+            const response = await fetch("/api/auth/signup", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(credentials)
             });
 
             if (!response.ok) {
-                throw new Error("Invalid credentials");
+                throw new Error("Failed to sign up. Please check your info.");
             }
 
             const data = await response.json();
@@ -55,4 +56,4 @@ class SignIn {
     }
 }
 
-new SignIn();
+new SignUp();

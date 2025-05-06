@@ -106,7 +106,9 @@ cd shortio-api
 make dev
 ```
 
-Backend URL: `http://localhost:8080`
+* Backend URL: [localhost:8080](http://localhost:8080)
+
+* Swagger UI: [localhost:8080/q/swagger-ui/](http://localhost:8080/q/swagger-ui/)
 
 ## 📚 Documentation
 
@@ -118,6 +120,8 @@ Detailed module and API documentation is available in the backend repo under the
 * [Users](./docs/users.md)
 * [Resources](./docs/resources.md)
 * [URL Shortener](./docs/shortner.md)
+
+> You can also access the [swagger ui](http://localhost:8080/q/swagger-ui/).
 
 ## 🤝 Contributing
 

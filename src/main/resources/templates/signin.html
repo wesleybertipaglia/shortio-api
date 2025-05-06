@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Shortio - Authenticated URL Shortener">
+    <meta name="keywords" content="URL Shortener, Shortio, Sign In">
+    <title> Shortio | Sign In</title>
+</head>
+
+<body>
+    <h1>Sign In</h1>
+    <form id="signin-form">
+        <label>Email:</label>
+        <input type="email" id="email" required>
+        <br>
+        <label>Password:</label>
+        <input type="password" id="password" required>
+        <br>
+        <button type="submit">Sign In</button>
+    </form>
+
+    <script>
+        document.getElementById("signin-form").addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const urlParams = new URLSearchParams(window.location.search);
+            const redirect = urlParams.get('redirect');
+
+            const email = document.getElementById("email").value;
+            const password = document.getElementById("password").value;
+
+            const response = await fetch("/api/auth/signin", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ email, password })
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                localStorage.setItem("token", data.token.content);
+
+                const slugResponse = await fetch(`/s/${redirect}`, {
+                    method: "GET",
+                    headers: { "Authorization": `Bearer ${data.token.content}` }
+                });
+
+                if (slugResponse.ok) {
+                    const result = await slugResponse.json();
+                    window.location.href = result.url;
+                } else {
+                    alert("Unable to resolve short URL");
+                }
+            } else {
+                alert("Invalid credentials");
+            }
+        });
+    </script>
+</body>
+
+</html>

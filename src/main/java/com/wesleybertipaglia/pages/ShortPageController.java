@@ -5,13 +5,13 @@ import java.net.URI;
 import com.wesleybertipaglia.services.ResourceService;
 
 import io.quarkus.security.identity.SecurityIdentity;
+import io.vertx.core.json.JsonObject;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
 @Path("/s")
-@Produces(MediaType.TEXT_HTML)
 @Consumes(MediaType.APPLICATION_JSON)
 public class ShortPageController {
     @Inject
@@ -22,6 +22,7 @@ public class ShortPageController {
 
     @GET
     @Path("/{slug}")
+    @Produces(MediaType.APPLICATION_JSON)
     public Response redirect(@PathParam("slug") String slug) {
         if (identity.isAnonymous()) {
             var url = "/p/auth/signin?redirect=" + slug;
@@ -35,6 +36,6 @@ public class ShortPageController {
             url = "https://" + url;
         }
 
-        return Response.seeOther(URI.create(url)).build();
+        return Response.ok(new JsonObject().put("url", url)).build();
     }
 }

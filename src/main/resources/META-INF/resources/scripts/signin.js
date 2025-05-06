@@ -58,7 +58,12 @@ async function resolveShortUrl(redirect, token) {
 
         if (slugResponse.ok) {
             const result = await slugResponse.json();
-            window.location.href = result.url;
+            if (result && result.url) {
+                window.alert("You will be redirected shortly...");
+                window.location.href = result.url;
+            } else {
+                alert("Invalid response from short URL resolver");
+            }
         } else {
             alert("Unable to resolve short URL");
         }

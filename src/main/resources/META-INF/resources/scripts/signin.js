@@ -1,71 +1,93 @@
-document.addEventListener("DOMContentLoaded", () => {
-    const token = localStorage.getItem("token");
-    const redirect = getRedirectParameter();
+class SignIn {
+    constructor() {
+        this.token = localStorage.getItem("token");
+        this.redirectParam = this.getRedirectParameter();
+        document.addEventListener("DOMContentLoaded", () => this.init());
+    }
 
-    if (token && redirect) {
-        resolveShortUrl(redirect, token);
-    } else {
-        const signinForm = document.getElementById("signin-form");
-        if (signinForm) {
-            signinForm.addEventListener("submit", handleSignInSubmit);
+    init() {
+        if (this.token && this.redirectParam) {
+            this.resolveShortUrl(this.redirectParam, this.token);
+        } else {
+            const form = document.getElementById("signin-form");
+            if (form) {
+                form.addEventListener("submit", (e) => this.handleSignInSubmit(e));
+            }
         }
     }
-});
 
-async function handleSignInSubmit(e) {
-    e.preventDefault();
-    const redirect = getRedirectParameter();
-    const credentials = getCredentials();
-    await submitSignIn(credentials, redirect);
-}
-
-function getRedirectParameter() {
-    const urlParams = new URLSearchParams(window.location.search);
-    return urlParams.get('redirect');
-}
-
-function getCredentials() {
-    const emailInput = document.getElementById("email");
-    const passwordInput = document.getElementById("password");
-    return {
-        email: emailInput ? emailInput.value : "",
-        password: passwordInput ? passwordInput.value : ""
-    };
-}
-
-async function submitSignIn(credentials, redirect) {
-    const response = await fetch("/api/auth/signin", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(credentials)
-    });
-
-    if (response.ok) {
-        const data = await response.json();
-        localStorage.setItem("token", data.token.content);
-        await resolveShortUrl(redirect, data.token.content);
-    } else {
-        alert("Invalid credentials");
+    getRedirectParameter() {
+        const urlParams = new URLSearchParams(window.location.search);
+        return urlParams.get('redirect');
     }
-}
 
-async function resolveShortUrl(redirect, token) {
-    if (redirect) {
-        const slugResponse = await fetch(`/s/${redirect}`, {
-            method: "GET",
-            headers: { "Authorization": `Bearer ${token}` }
-        });
+    getCredentials() {
+        return {
+            email: document.getElementById("email")?.value || "",
+            password: document.getElementById("password")?.value || ""
+        };
+    }
 
-        if (slugResponse.ok) {
-            const result = await slugResponse.json();
-            if (result && result.url) {
-                window.alert("You will be redirected shortly...");
+    async handleSignInSubmit(event) {
+        event.preventDefault();
+        const credentials = this.getCredentials();
+        await this.submitSignIn(credentials, this.redirectParam);
+    }
+
+    async submitSignIn(credentials, redirect) {
+        try {
+            const response = await fetch("/api/auth/signin", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(credentials)
+            });
+
+            if (!response.ok) {
+                throw new Error("Invalid credentials");
+            }
+
+            const data = await response.json();
+            localStorage.setItem("token", data.token.content);
+            await this.resolveShortUrl(redirect, data.token.content);
+        } catch (error) {
+            alert(error.message);
+        }
+    }
+
+    async resolveShortUrl(redirect, token) {
+        if (!redirect) return;
+
+        try {
+            const response = await fetch(`/s/${redirect}`, {
+                method: "GET",
+                headers: { "Authorization": `Bearer ${token}` }
+            });
+
+            if (!response.ok) {
+                if (response.status === 401) {
+                    alert("Session expired. Please sign in again.");
+                    localStorage.removeItem("token");
+                    return;
+                }
+                else {
+                    alert("Failed to resolve short URL");
+                    return;
+                }
+
+            }
+
+            const result = await response.json();
+
+            if (result?.url) {
+                alert("You will be redirected shortly...");
                 window.location.href = result.url;
             } else {
                 alert("Invalid response from short URL resolver");
             }
-        } else {
-            alert("Unable to resolve short URL");
+        } catch (error) {
+            alert(error.message);
         }
     }
 }
+
+new SignIn();

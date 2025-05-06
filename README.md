@@ -23,7 +23,7 @@ By integrating Permit.io, shortio ensures that shared links are only accessible 
 * **Organization-scoped resource permissions** for fine-grained access
 * **JWT-based authentication** for secure session management
 * **Seamless frontend–backend integration** with automatic login redirection
-* **Modern tech stack**: React frontend, Quarkus backend, MongoDB, and Panache ORM
+* **Modern tech stack**: Quarkus, Quarkus Qute, MongoDB, and Panache ORM
 * **Developer-friendly setup**: hot reload, simple environment configuration, and Docker support
 
 ## 🔄 How It Works
@@ -54,17 +54,15 @@ By integrating Permit.io, shortio ensures that shared links are only accessible 
 Make sure the following tools are installed:
 
 * Java 21+
-* Node.js v18+
 * Docker (optional, used for MongoDB)
 * `make` (used for backend automation tasks)
 
 ### Setup Instructions
 
-Clone both repositories:
+Clone the repository:
 
 ```bash
 git clone https://github.com/wesleybertipaglia/shortio-api.git
-git clone https://github.com/wesleybertipaglia/shortio-app.git
 ```
 
 #### Configure Permit.io
@@ -101,7 +99,7 @@ Update `.env`:
 PERMIT_API_KEY=your_api_key_here
 ```
 
-### Start the Backend
+### Running the api
 
 ```bash
 cd shortio-api
@@ -109,16 +107,6 @@ make dev
 ```
 
 Backend URL: `http://localhost:8080`
-
-### Start the Frontend
-
-```bash
-cd shortio-app
-npm install
-npm run dev
-```
-
-Frontend URL: `http://localhost:5173`
 
 ## 📚 Documentation
 

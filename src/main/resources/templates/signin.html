@@ -7,55 +7,44 @@
     <meta name="description" content="Shortio - Authenticated URL Shortener">
     <meta name="keywords" content="URL Shortener, Shortio, Sign In">
     <title> Shortio | Sign In</title>
+    <link rel="shortcut icon" href="favicon.webp" type="image/x-icon">
+
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
 </head>
 
 <body>
-    <h1>Sign In</h1>
-    <form id="signin-form">
-        <label>Email:</label>
-        <input type="email" id="email" required>
-        <br>
-        <label>Password:</label>
-        <input type="password" id="password" required>
-        <br>
-        <button type="submit">Sign In</button>
-    </form>
+    <main class="flex flex-col items-center justify-center min-h-screen bg-gray-100">
+        <div class="mb-6">
+            <h1 class="text-4xl font-bold text-center pb-4 mb-4 border-b border-neutral-200">🐕 Short.io</h1>
+            <p class="text-gray-600 text-center">Shorten your URLs with ease!</p>
+        </div>
 
-    <script>
-        document.getElementById("signin-form").addEventListener("submit", async (e) => {
-            e.preventDefault();
-            const urlParams = new URLSearchParams(window.location.search);
-            const redirect = urlParams.get('redirect');
+        <div class="bg-white p-6 m-6 rounded-md shadow max-w-sm w-full">
+            <h2 class="text-xl font-bold text-center">Sign In</h2>
+            <p class="text-gray-600 text-center">Welcome back! Please sign in to your account.</p>
 
-            const email = document.getElementById("email").value;
-            const password = document.getElementById("password").value;
+            <form id="signin-form" class="space-y-4 mt-4">
+                <div class="flex flex-col space-y-1">
+                    <label class="font-medium">Email</label>
+                    <input type="email" id="email" required class="border border-gray-300 p-2 rounded">
+                </div>
 
-            const response = await fetch("/api/auth/signin", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ email, password })
-            });
+                <div class="flex flex-col space-y-1">
+                    <label class="font-medium">Password</label>
+                    <input type="password" id="password" required class="border border-gray-300 p-2 rounded">
+                </div>
 
-            if (response.ok) {
-                const data = await response.json();
-                localStorage.setItem("token", data.token.content);
+                <button type="submit" class="w-full mt-4 p-3 bg-neutral-900 text-neutral-50 rounded">Sign In</button>
 
-                const slugResponse = await fetch(`/s/${redirect}`, {
-                    method: "GET",
-                    headers: { "Authorization": `Bearer ${data.token.content}` }
-                });
+                <div class="text-center mt-4 pt-4 border-t border-neutral-200">
+                    <p class="text-gray-600">Don't have an account? <a href="/signup" class="text-blue-500">Sign Up</a>
+                    </p>
+                </div>
+            </form>
+        </div>
+    </main>
 
-                if (slugResponse.ok) {
-                    const result = await slugResponse.json();
-                    window.location.href = result.url;
-                } else {
-                    alert("Unable to resolve short URL");
-                }
-            } else {
-                alert("Invalid credentials");
-            }
-        });
-    </script>
+    <script src="/scripts/signin.js"></script>
 </body>
 
 </html>
